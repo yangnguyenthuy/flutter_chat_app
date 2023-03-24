@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/chatroom.dart';
 import 'package:flutter_chat_app/createaccount.dart';
+import 'package:flutter_chat_app/group_chat_screen.dart';
 import 'package:flutter_chat_app/homescreen.dart';
 import 'package:flutter_chat_app/loginscreen.dart';
 
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),*/
-      home: const HomeScreen(),
+      home: const GroupChatScreen(),
     );
   }
 }

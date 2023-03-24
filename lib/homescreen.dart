@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/LoginScreen.dart';
 import 'package:flutter_chat_app/chatroom.dart';
+import 'package:flutter_chat_app/group_chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -134,6 +135,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text("Search"),
           ),*/
         ], 
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.group),
+        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupChatScreen())),
       ),
     );
   }

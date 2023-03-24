@@ -1,36 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_chat_app/group_info.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/homescreen.dart';
+class GroupChatRoom extends StatefulWidget {
+  const GroupChatRoom({super.key});
 
-class ChatRoom extends StatelessWidget {
-  const ChatRoom({super.key});
+  @override
+  State<GroupChatRoom> createState() => _GroupChatRoomState();
+}
 
+class _GroupChatRoomState extends State<GroupChatRoom> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            alignment: Alignment.centerLeft,
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => HomeScreen())), 
-            icon: Icon(Icons.arrow_back),
-        ),
-        centerTitle: true,
-        title: Text("Name"),
+        title: Text("Group Name"),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupInfo())), 
+            icon: Icon(Icons.more_vert),
+          )
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: size.width,
-              height: size.height / 1.25,
-            ),
-          ],
-        ),
-      ),
+      body: Container(),
       bottomNavigationBar: Container(
         width: size.width,
         height: size.height / 10,
