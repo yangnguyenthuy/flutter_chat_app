@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/add_members.dart';
 import 'package:flutter_chat_app/chatroom.dart';
 import 'package:flutter_chat_app/groupchatroom.dart';
 
@@ -29,7 +30,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.create),
-        onPressed: () {},
+        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddMembers())),
       ),
     );
   }
