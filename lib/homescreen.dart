@@ -14,9 +14,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -28,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      
       body: Column(
         children: [
           SizedBox(
@@ -98,47 +106,27 @@ class _HomeScreenState extends State<HomeScreen> {
             subtitle: Text("Offline"),
             trailing: Icon(Icons.chat, color: Colors.black,),
           ),
-          /*Container(
-            height: 50,
-            color: Colors.amber[600],
-            child: const Center(child: Text('Entry A')),
-          ),
-          Container(
-            height: 50,
-            color: Colors.amber[500],
-            child: const Center(child: Text('Entry B')),
-          ),
-          Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry C')),
-          ),*/
-          /*Container(
-            height: size.height / 14,
-            width: size.width,
-            alignment: Alignment.center,
-            child: Container(
-              height: size.height / 14,
-              width: size.width / 1.2,
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {}, 
-            child: Text("Search"),
-          ),*/
         ], 
       ),
+
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.group),
         onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupChatScreen())),
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem> [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Trang chủ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Tài khoản',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
