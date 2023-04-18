@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:html';
+import 'dart:math';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/LoginScreen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -10,9 +17,36 @@ class CreateAccount extends StatefulWidget {
 
 class _CreateAccountState extends State<CreateAccount> {
 
-  final TextEditingController _name = TextEditingController();
-  final TextEditingController _username = TextEditingController();
-  final TextEditingController _password = TextEditingController();
+  TextEditingController _name = TextEditingController();
+  TextEditingController _username = TextEditingController();
+  TextEditingController _password = TextEditingController();
+
+  Future signUp() async {
+    var url = "http://192.168.1.7/flutter_chat/xuly/dangky.php";
+    if(_name.text == "" || _username.text == "" || _password.text == "" )
+    {
+      Fluttertoast.showToast(msg: "Vui lòng điền đủ thông tin");
+    }
+    else
+    {
+      var res = await http.post(Uri.parse(url), body: {
+          "Name": _name.text,
+          "Username": _username.text,
+          "Password": _password.text,
+      });
+
+      var data = jsonDecode(res.body);
+      if (data == "Success")
+      {
+        Fluttertoast.showToast(msg: "Đăng Ký Thành Công");
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => LoginScreen()));
+      }
+      else
+      {
+        Fluttertoast.showToast(msg: "Tài Khoản đã tồn tại");
+      }     
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +102,12 @@ class _CreateAccountState extends State<CreateAccount> {
                 child: field(size, "Mật khẩu", Icons.lock, _password),
               ),
             ),
-            customButton(size),
+
+            GestureDetector(
+              onTap: signUp,
+              child: customButton(size),
+            ),
+
             SizedBox(
               height: size.height / 5,
             ),

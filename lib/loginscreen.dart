@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/createaccount.dart';
 import 'package:flutter_chat_app/homescreen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +16,31 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
+
+  Future signIn() async{
+    var url = "http://192.168.1.7/flutter_chat/xuly/dangnhap.php";
+    if(_username.text == "" || _password.text == "" )
+    {
+      Fluttertoast.showToast(msg: "Vui lòng điền đủ thông tin");
+    }
+    else
+    {
+      var res = await http.post(Uri.parse(url), body: {
+        "Username": _username.text,
+        "Password": _password.text,
+      });
+
+      var data = jsonDecode(res.body);
+      if (data == "Success")
+      {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => HomeScreen()));
+      }
+      else
+      {
+        Fluttertoast.showToast(msg: "Tài Khoản hoặc mật khẩu chưa đúng");
+      }     
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           customButton(size),
+          
           SizedBox(
             height: size.height / 5,
           ),
@@ -81,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget customButton(Size size) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => HomeScreen())),
+      onTap: signIn,
       child: Container(
         height: size.height / 14,
         width: size.width / 1.2,
