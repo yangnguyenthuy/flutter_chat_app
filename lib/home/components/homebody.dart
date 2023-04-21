@@ -1,12 +1,12 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/chatroom.dart';
+import 'package:flutter_chat_app/chatroom/chatroom.dart';
 import 'package:flutter_chat_app/home/components/chatcard.dart';
 import 'package:flutter_chat_app/model/chat.dart';
 
-class Body extends StatelessWidget {
-  const Body({super.key});
+class HomeBody extends StatelessWidget {
+  const HomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {

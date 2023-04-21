@@ -1,7 +1,8 @@
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/home/components/body.dart';
+import 'package:flutter_chat_app/add_members.dart';
+import 'package:flutter_chat_app/home/components/homebody.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,11 +13,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  static const List<Widget> _bodyOption = <Widget> [
+    HomeBody(),
+    GroupBody(),
+    FriendBody(),
+    AccountDetail(),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(),
-      body: Body(),
+      body: HomeBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddMembers()));},
+        child: Icon(Icons.add),
+      ),
       bottomNavigationBar: customBottomNavigationBar(),
     );
   }

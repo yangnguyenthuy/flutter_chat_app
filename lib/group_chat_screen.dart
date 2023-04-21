@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/add_members.dart';
-import 'package:flutter_chat_app/chatroom.dart';
-import 'package:flutter_chat_app/groupchatroom.dart';
+import 'package:flutter_chat_app/groupchatroom/chatroom.dart';
 
 class GroupChatScreen extends StatefulWidget {
   const GroupChatScreen({super.key});
@@ -22,7 +21,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
         itemCount: 5,
         itemBuilder: (context,index) {
           return ListTile(
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => GroupChatRoom())),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ChatRoom())),
             leading: Icon(Icons.group),
             title: Text("Group $index",),
           );
