@@ -1,71 +1,69 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../config/api_connection.dart';
+
+Future<List<Chat>> fetchChat() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var id = prefs.getString('acc_id');
+  final response = await http
+      .post(Uri.parse(API.getChatCard),body: {"id": id});
+
+  // Use the compute function to run parsePhotos in a separate isolate.
+  return parseChat(response.body);
+}
+
+// A function that converts a response body into a List<Photo>.
+List<Chat> parseChat(String responseBody) {
+  List<Chat> chat = <Chat>[];
+
+  var parsed = jsonDecode(responseBody) as List;
+  parsed.forEach((element) { 
+    chat.add(Chat.fromJson(element));
+  });
+
+  return chat;
+  // //final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+  // return parsed.map<Chat>((json) => Chat.fromJson(json)).toList();
+}
+
 class Chat {
+  final int id;
   final String name, lastMessage, image, time;
   final bool isActive;
 
   Chat({
+    this.id = 0,
     this.name = '',
     this.lastMessage = '',
     this.image = '',
     this.time = '',
     this.isActive = false,
   });
+
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    var y;
+      if(json['status'] == 0) 
+      {
+        y = false;
+      }
+      else 
+      {
+        y = true;
+      }
+      var x = Chat(
+        id: int.parse(json['id_acc']),
+        name: json['name'],
+        lastMessage: json['LastChat'],
+        image: json['img'],
+        time: json['Time'],
+        isActive: y,
+      );
+      return x;
+  }
+
 }
 
-List chatsData = [
-  Chat(
-    name: "Sơn Hoàng",
-    lastMessage: "Đi học đi bro....",
-    image: "assets/images/user.png",
-    time: "3m ago",
-    isActive: false,
-  ),
-  Chat(
-    name: "Tài Nguyễn",
-    lastMessage: "qa nào đồng chí...",
-    image: "assets/images/user_2.png",
-    time: "8m ago",
-    isActive: true,
-  ),
-  Chat(
-    name: "Thiện Khiêm",
-    lastMessage: "Bớt chơi game đi m...",
-    image: "assets/images/user_3.png",
-    time: "5d ago",
-    isActive: false,
-  ),
-  Chat(
-    name: "Minh Mẫn",
-    lastMessage: "You’re welcome :)",
-    image: "assets/images/user_4.png",
-    time: "5d ago",
-    isActive: true,
-  ),
-  Chat(
-    name: "Huy",
-    lastMessage: "Thanks",
-    image: "assets/images/user_5.png",
-    time: "6d ago",
-    isActive: false,
-  ),
-  Chat(
-    name: "Đại Ka",
-    lastMessage: "Hope you are doing well...",
-    image: "assets/images/user.png",
-    time: "3m ago",
-    isActive: false,
-  ),
-  Chat(
-    name: "Esther Howard",
-    lastMessage: "Hello Abdullah! I am...",
-    image: "assets/images/user_2.png",
-    time: "8m ago",
-    isActive: true,
-  ),
-  Chat(
-    name: "Ralph Edwards",
-    lastMessage: "Do you have update...",
-    image: "assets/images/user_3.png",
-    time: "5d ago",
-    isActive: false,
-  ),
-];

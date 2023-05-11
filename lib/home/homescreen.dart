@@ -27,10 +27,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: customAppBar(),
       body: _bodyOption.elementAt(_selectedIndex),
-      floatingActionButton: _selectedIndex == 1  ? Container() : FloatingActionButton(
+      floatingActionButton: _selectedIndex == 1  ? FloatingActionButton(
         onPressed: () {Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddMembers()));},
         child: Icon(Icons.add),
-      ),
+      ) : Container(),
       bottomNavigationBar: customBottomNavigationBar(),
     );
   }

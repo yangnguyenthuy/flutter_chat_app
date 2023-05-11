@@ -13,20 +13,48 @@ class HomeBody extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: ListView.builder(
-            itemCount: chatsData.length,
-            itemBuilder: (context, index) => ChatCard(
-              chat: chatsData[index],
-              press: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatRoom(),
-                ),
-              ),
-            ),
+          child: 
+            FutureBuilder<List<Chat>>(
+              future: fetchChat(),
+              builder: (context, snapshot) {
+                if(snapshot.hasData)
+                {
+                  return ListChat(chatroom: snapshot.data!);
+                }
+                if(snapshot.hasError) {
+                  return const Center(
+                    child: Text('An error has occurred!'),
+                  );
+                }
+                if(snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: Text("Loading..."));
+                }
+                return Center(child: Text("Loading..."));
+              },
+            )
+          )
+      ],
+    );
+  }
+}
+
+class ListChat extends StatelessWidget {
+  final List<Chat> chatroom;
+  const ListChat({super.key, required this.chatroom});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: chatroom.length,
+      itemBuilder: (context, index) => ChatCard(
+        chat: chatroom[index],
+        press: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatRoom(),
           ),
         ),
-      ],
+      ),
     );
   }
 }
