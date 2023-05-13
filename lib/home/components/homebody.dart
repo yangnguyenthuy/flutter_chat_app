@@ -51,7 +51,7 @@ class ListChat extends StatelessWidget {
         press: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatRoom(),
+            builder: (context) => ChatRoom(id: chatroom[index].id),
           ),
         ),
       ),

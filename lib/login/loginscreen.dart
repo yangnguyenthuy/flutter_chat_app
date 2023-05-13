@@ -65,19 +65,19 @@ class _LoginScreenState extends State<LoginScreen> {
         body: {
           "Username": data.name,
           "Password": data.password,
-          "Name": username.toString(),
+          "Name": username,
         },
       );
 
       if(res.statusCode == 200)
       {
         var resBodyOfSignUp = jsonDecode(res.body);
-        if(resBodyOfSignUp == "Success")
+        if(resBodyOfSignUp["Status"] == "Success")
         {
-          var id = resBodyOfSignUp["id_acc"];
+          //var id = resBodyOfSignUp["id_acc"];
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('name', data.name!);
-          prefs.setString('acc_id', id);
+          //prefs.setString('acc_id', id);
           return null;
         }
         else
