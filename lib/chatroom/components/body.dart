@@ -6,7 +6,7 @@ import 'package:flutter_chat_app/chatroom/components/message.dart';
 import 'package:flutter_chat_app/model/message.dart';
 
 class Body extends StatelessWidget {
-  const Body({super.key});
+  const Body(int id, {super.key});
 
   @override
   Widget build(BuildContext context) {

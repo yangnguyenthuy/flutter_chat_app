@@ -1,5 +1,5 @@
 class API {
-  static const host = "http://172.20.217.195/flutter_chat";
+  static const host = "http://172.16.17.72/flutter_chat";
 
   //User
   static const userSignIn = "$host/user/dangnhap.php";

@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/chatroom/components/body.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/api_connection.dart';
@@ -19,96 +20,70 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
 
-  Future<User> fetchUser() async {
-    int i = widget.id;
-    final response = await http.post(Uri.parse(API.getChatPerson),body: {"id": i});
-    // Use the compute function to run parsePhotos in a separate isolate.
-    return parseUser(response.body);
-  }
+  late User? user;
 
-  User parseUser(String responseBody) {
+  getUserFromApi() async {
 
-    var parsed = jsonDecode(responseBody);
-    print(parsed);
-    User userTemp = User(name: parsed['name'],image: parsed['img'],status: parsed['status']); 
+    int id = widget.id;
+    http.Response res = await http.post(
+      Uri.parse(API.getChatPerson),
+      body: {
+        "id": id.toString(),
+      }
+    );
 
+    var result = jsonDecode(res.body);
+    // print(result[0]);
+    //user bị lỗi
     
-    return userTemp;
-    // //final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-    // return parsed.map<Chat>((json) => Chat.fromJson(json)).toList();
+    if(res.statusCode == 200) {
+      user = User.fromJson(result[0]);
+      setState(() {});
+    }
+    else {
+      debugPrint('${res.body}');
+    }
   }
-  // void getUserFormApi() async {
-  //   var res = await http.post(
-  //     Uri.parse(API.getChatPerson),
-  //     body: {
-  //       "id": widget.id
-  //     }
-  //   );
-
-  //   var data = jsonDecode(res.body);
-  //   print(res.body);
-  //   User userTemp = User(name: data['name'],image: data['img'],status: data['status']);
-  //   setState(() {
-  //     print('ok');
-  //   });
-  //   // await http.post(Uri.parse(API.getChatPerson), body: {"id": widget.id}).then((res) {
-  //   //   var data = jsonDecode(res.body);
-  //   //   this.user = User(name: data['name'],image: data['img'],status: data['status']);
-  //   //   setState(() {
-  //   //     print('ok');
-  //   //   });
-  //     // user = data.map((e) => User.fromJson(e));
-  //   // });
-  // }
-
-  // @override
-  // void initState() {
-  //   fetchUser(widget.id);
-  // }
+ 
+ @override
+  void initState() {
+    super.initState();
+    getUserFromApi();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(),
-      //body: Body(),
+      body: Body(widget.id),
     );
   }
 
   AppBar customAppBar() {
     return AppBar(
       automaticallyImplyLeading: false,
-      title: FutureBuilder<User>(
-        future: fetchUser(),
-        builder:(context, snapshot) {
-          if(snapshot.hasData)
-          {
-            return Row(
+      title: Row(
               children: [
                 BackButton(),
                 CircleAvatar(
-                  backgroundImage: AssetImage(snapshot.data!.image),
+                  backgroundImage: AssetImage(user!.image),
                 ),
                 SizedBox(width: 20.0 * 0.75),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "${snapshot.data!.name}",
+                      user!.name,
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      "${snapshot.data!.status}",
+                      user!.status,
                       style: TextStyle(fontSize: 12),
                     )
                   ],
                 )
               ],
-            );
-          }
-          else return Text("Error");
-        },
-      ), 
+            ),
       actions: [
         IconButton(
           icon: Icon(Icons.local_phone),
