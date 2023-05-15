@@ -11,8 +11,9 @@ import '../config/api_connection.dart';
 import '../model/user.dart';
 
 class ChatRoom extends StatefulWidget {
-  const ChatRoom({super.key, required this.id});
-  final int id;
+  const ChatRoom({super.key, required this.id_acc, required this.id_room});
+  final int id_acc;
+  final int id_room;
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
@@ -23,8 +24,7 @@ class _ChatRoomState extends State<ChatRoom> {
   late User? user;
 
   getUserFromApi() async {
-
-    int id = widget.id;
+    int id = widget.id_acc;
     http.Response res = await http.post(
       Uri.parse(API.getChatPerson),
       body: {
@@ -55,7 +55,7 @@ class _ChatRoomState extends State<ChatRoom> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(),
-      body: Body(widget.id),
+      body: Body(id_room: widget.id_room),
     );
   }
 

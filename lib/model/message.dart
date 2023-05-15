@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 enum ChatMessageType { text, audio, image, video }
 // ignore: constant_identifier_names
 enum MessageStatus { not_sent, not_view, viewed }
@@ -14,6 +17,36 @@ class ChatMessage {
     required this.messageStatus,
     required this.isSender,
   });
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json, String uid) {
+    var type, status, isSender;
+    if(json['mes_type'] == "Text")
+    {
+      type = ChatMessageType.text;
+    }
+
+    if(json['mes_status'] == "not view")
+    {
+      status = MessageStatus.not_view;
+    }
+
+    if(int.parse(json['acc_id']) == int.parse(uid))
+    {
+      isSender = true;
+    }
+    else
+    {
+      isSender = false;
+    }
+
+    var mes = ChatMessage(
+      text: json['content'],
+      messageType: type,
+      messageStatus: status,
+      isSender: isSender,
+    );
+    return mes;
+  }
 }
 
 List demeChatMessages = [

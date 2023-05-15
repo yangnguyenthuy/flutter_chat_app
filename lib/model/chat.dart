@@ -31,12 +31,13 @@ List<Chat> parseChat(String responseBody) {
 }
 
 class Chat {
-  final int id;
+  final int id_acc, id_room;
   final String name, lastMessage, image, time;
   final bool isActive;
 
   Chat({
-    this.id = 0,
+    this.id_room = 0,
+    this.id_acc = 0,
     this.name = '',
     this.lastMessage = '',
     this.image = '',
@@ -55,7 +56,8 @@ class Chat {
         y = true;
       }
       var x = Chat(
-        id: int.parse(json['id_acc']),
+        id_room: int.parse(json['id']),
+        id_acc: int.parse(json['id_acc']),
         name: json['name'],
         lastMessage: json['LastChat'],
         image: json['img'],
