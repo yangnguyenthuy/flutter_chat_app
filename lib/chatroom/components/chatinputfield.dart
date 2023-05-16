@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,11 @@ class _ChatInputFieldState extends State<ChatInputField> {
         "id": id.toString(),
         "room": room.toString(),
       });
+    var resBodyOfSignUp = jsonDecode(response.body);
+    if(resBodyOfSignUp["Status"] == "Success")
+    {
+      inputContent.clear();
+    }
   }
 
   @override
