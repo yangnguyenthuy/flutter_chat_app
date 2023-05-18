@@ -43,14 +43,14 @@ class FriendBody extends StatelessWidget {
             ),
           ],
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: friendsData.length,
-            itemBuilder: (context, index) => FriendCard(
-              friend: friendsData[index],
-            ),
-          ),
-        ),
+        // Expanded(
+        //   child: ListView.builder(
+        //     itemCount: friendsData.length,
+        //     itemBuilder: (context, index) => FriendCard(
+        //       friend: friendsData[index],
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

@@ -1,53 +1,57 @@
+// class Friend {
+//   final int idAcc;
+//   final String name, image;
+//   final bool isActive;
+
+//   Friend({
+//     this.idAcc = 0,
+//     this.name = '',
+//     this.image = '',
+//     this.isActive = false,
+//   });
+// }
+
+import 'dart:convert';
+import 'package:meta/meta.dart';
+
 class Friend {
-  final String name, image;
-  final bool isActive;
-
   Friend({
-    this.name = '',
-    this.image = '',
-    this.isActive = false,
+    required this.idAcc,
+    required this.avatar,
+    required this.name,
+    required this.email,
+    required this.idFriend,
+    required this.idRoom,
   });
-}
 
-List friendsData = [
-  Friend(
-    name: "Sơn Hoàng",
-    image: "assets/images/user.png",
-    isActive: false,
-  ),
-  Friend(
-    name: "Tài Nguyễn",
-    image: "assets/images/user_2.png",
-    isActive: true,
-  ),
-  Friend(
-    name: "Thiện Khiêm",
-    image: "assets/images/user_3.png",
-    isActive: false,
-  ),
-  Friend(
-    name: "Minh Mẫn",
-    image: "assets/images/user_4.png",
-    isActive: true,
-  ),
-  Friend(
-    name: "Huy",
-    image: "assets/images/user_5.png",
-    isActive: false,
-  ),
-  Friend(
-    name: "Đại Ka",
-    image: "assets/images/user.png",
-    isActive: false,
-  ),
-  Friend(
-    name: "Esther Howard",
-    image: "assets/images/user_2.png",
-    isActive: true,
-  ),
-  Friend(
-    name: "Ralph Edwards",
-    image: "assets/images/user_3.png",
-    isActive: false,
-  ),
-];
+  final String idAcc;
+  final String avatar;
+  final String name;
+  final String email;
+  final String idFriend;
+  final String idRoom;
+
+  static List<Friend> allFromResponse(String response) {
+    var decodedJson = json.decode(response);
+
+    return decodedJson
+        .map((obj) => Friend.fromMap(obj))
+        .toList()
+        .cast<Friend>();
+  }
+
+  static Friend fromMap(Map map) {
+    return new Friend(
+      idAcc: map['id_acc'],
+      avatar: map['img'],
+      name: map['name'],
+      email: map['username'],
+      idFriend: map['id'],
+      idRoom: map['room'],
+    );
+  }
+
+  static String _capitalize(String input) {
+    return input.substring(0, 1).toUpperCase() + input.substring(1);
+  }
+}

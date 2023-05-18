@@ -4,6 +4,7 @@ class API {
   //User
   static const userSignIn = "$host/user/dangnhap.php";
   static const userSignUp = "$host/user/dangky.php";
+  static const search = "$host/user/search.php";
   
   //Chat
   static const getChatCard = "$host/chat/getchatcard.php";
@@ -12,6 +13,13 @@ class API {
   
   //Send
   static const sendMessage = "$host/chat/sendmessage.php";
+
+  //Friend
+  static const getFriendList = "$host/friend/getfriendlist.php";
+  static const sendFriendRequest = "$host/friend/sendfriendrequest.php";
+  static const getFriendRequest = "$host/friend/getfriendrequest.php";
+  static const friendAction = "$host/friend/friendaction.php";
+
   // static const follow = "$host/follow";
   // static const topic = "$host/topic";
   // static const user = "$host/user";

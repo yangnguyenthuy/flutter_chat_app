@@ -4,6 +4,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/chatroom/components/body.dart';
+import 'package:flutter_chat_app/home/components/homebody.dart';
+import 'package:flutter_chat_app/home/homescreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,6 +16,7 @@ class ChatRoom extends StatefulWidget {
   const ChatRoom({super.key, required this.id_acc, required this.id_room});
   final int id_acc;
   final int id_room;
+  
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
@@ -64,7 +67,11 @@ class _ChatRoomState extends State<ChatRoom> {
       automaticallyImplyLeading: false,
       title: Row(
               children: [
-                BackButton(),
+                BackButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                  },
+                ),
                 CircleAvatar(
                   backgroundImage: AssetImage(user!.image),
                 ),
