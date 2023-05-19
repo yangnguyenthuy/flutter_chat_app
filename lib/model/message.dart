@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +19,44 @@ class ChatMessage {
     required this.messageStatus,
     required this.isSender,
   });
+
+  static List<ChatMessage> allFromResponse(String response, String id) {
+    var decodedJson = json.decode(response);
+
+    return decodedJson
+        .map((obj) => ChatMessage.fromMap(obj,id))
+        .toList()
+        .cast<ChatMessage>();
+  }
+
+  static ChatMessage fromMap(Map map, String uid) {
+    var type, status, isSender;
+    if(map['mes_type'] == "Text")
+    {
+      type = ChatMessageType.text;
+    }
+
+    if(map['mes_status'] == "not view")
+    {
+      status = MessageStatus.not_view;
+    }
+
+    if(int.parse(map['acc_id']) == int.parse(uid))
+    {
+      isSender = true;
+    }
+    else
+    {
+      isSender = false;
+    }
+
+    return ChatMessage(
+      text: map['content'],
+      messageType: type,
+      messageStatus: status,
+      isSender: isSender,
+    );
+  }
 
   factory ChatMessage.fromJson(Map<String, dynamic> json, String uid) {
     var type, status, isSender;

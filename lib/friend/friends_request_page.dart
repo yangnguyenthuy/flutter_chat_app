@@ -64,7 +64,7 @@ class _NotificationsState extends State<Notifications> {
     }
 
     setState(() {
-      _request = FriendRequest.allFromResponse(response.body);
+      _loadRequest();
     });
   }
 
@@ -109,7 +109,7 @@ class _NotificationsState extends State<Notifications> {
 
     if (_request.isEmpty) {
       content = Center(
-        child: CircularProgressIndicator(),
+        child: Container(),
       );
     } else {
       content = ListView.builder(
