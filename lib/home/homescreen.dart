@@ -28,14 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _userAvatar;
   String? _userName;
 
-  // int _selectedIndex = 0;
-
-  // static const List<Widget> _bodyOption = <Widget> [
-  //   HomeBody(),
-  //   GroupBody(),
-  //   FriendBody(),
-  //   AccountDetail(),
-  // ];
   @override
   void initState() {
     super.initState();
@@ -94,12 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icons.menu,
                           color: Colors.white,
                         )),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.search,
-                          color: Colors.white,
-                        )),
                   ],
                 ),
               ),
@@ -149,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         buildContactAvatar('Moane', 'images/img5.jpeg'),
                         buildContactAvatar('Julie', 'images/img6.jpeg'),
                         buildContactAvatar('Allen', 'images/img7.jpeg'),
+                        buildContactAvatar('John', 'images/img8.jpg'),
                         buildContactAvatar('John', 'images/img8.jpg'),
                       ],
                     ),
@@ -256,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 56,
                         ),
                         Text(
-                          'Settings',
+                          'Cài đặt',
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ],
@@ -280,24 +267,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 35,
                     ),
                     const DrawerItem(
-                      title: 'Account',
+                      title: 'Tài khoản',
                       icon: Icons.key,
                     ),
                     const DrawerItem(title: 'Chats', icon: Icons.chat_bubble),
                     const DrawerItem(
-                        title: 'Notifications', icon: Icons.notifications),
+                        title: 'Thông báo', icon: Icons.notifications),
                     const DrawerItem(
-                        title: 'Data and Storage', icon: Icons.storage),
-                    const DrawerItem(title: 'Help', icon: Icons.help),
+                        title: 'Lưu trữ', icon: Icons.storage),
+                    const DrawerItem(title: 'Trợ giúp', icon: Icons.help),
                     const Divider(
                       height: 35,
                       color: Colors.green,
                     ),
                     const DrawerItem(
-                        title: 'Invite a friend', icon: Icons.people_outline),
+                        title: 'Bạn bè', icon: Icons.people_outline),
                   ],
                 ),
-                const DrawerItem(title: 'Log out', icon: Icons.logout)
+                const DrawerItem(title: 'Đăng xuất', icon: Icons.logout)
               ],
             ),
           ),

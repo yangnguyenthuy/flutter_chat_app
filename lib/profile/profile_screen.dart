@@ -1,34 +1,38 @@
 import 'dart:convert';
+import 'dart:html';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:http/http.dart' as http;
 
 import '../config/api_connection.dart';
-import '../model/request.dart';
+import '../model/user.dart';
 import '../widget/widget_class.dart';
 
-class Notifications extends StatefulWidget {
-  const Notifications({super.key});
+class Profile extends StatefulWidget {
+  const Profile({super.key});
 
   @override
-  State<Notifications> createState() => _NotificationsState();
+  State<Profile> createState() => _ProfileState();
 }
 
-class _NotificationsState extends State<Notifications> {
+class _ProfileState extends State<Profile> {
+  final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
+  final double convertHeight = 250 ;
+  final double profileHeight = 144 ;
+
   String? _userAvatar;
   String? _userName;
 
-  List<FriendRequest> _request = [];
+  User? _user; 
 
   @override
   void initState() {
     super.initState();
-    _loadRequest();
+    _loadProfile();
     _getAvatarAndName();
   }
 
@@ -50,99 +54,36 @@ class _NotificationsState extends State<Notifications> {
     });
   }
 
-  Future<void> _loadRequest() async {
+  Future<void> _loadProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString('acc_id');
     http.Response response =
-        await http.post(Uri.parse(API.getFriendRequest),body: {
+        await http.post(Uri.parse(API.getUserProfile),body: {
           "id": id.toString(),
         });
+    
+    var results = jsonDecode(response.body);
+    
+    String img = results['img'] as String;
+    String name = results['name'] as String;
+    String email = results['username'] as String;
 
     setState(() {
-      _request = FriendRequest.allFromResponse(response.body);
+      _user = User(
+        name: name,
+        image: img,
+        email: email,
+        status: 'Online');
     });
-  }
-
-  _friendAction(int requestID, String request) async {
-    http.Response response =
-      await http.post(Uri.parse(API.friendAction),body: {
-        "id": requestID.toString(),
-        "action": request,
-      });
-
-    if(response.statusCode == 200)
-    {
-        var resBodyOfSignUp = jsonDecode(response.body);
-        if(resBodyOfSignUp["Status"] == "Success")
-        {
-          if(request == "Accept") {
-            Fluttertoast.showToast(msg: "Thêm bạn thành công");
-          }
-          else if(request == "Decline") {
-            Fluttertoast.showToast(msg: "Đã từ chối yêu cầu kết bạn");
-          }
-        }
-    }
-
-    setState(() {
-      _loadRequest();
-    });
-  }
-
-  Widget _buildRequestListTile(BuildContext context, int index) {
-    var request = _request[index];
-
-    return ListTile(
-      leading: Hero(
-        tag: index,
-        child: CircleAvatar(
-          backgroundImage: NetworkImage(request.avatar),
-        ),
-      ),
-      title: Text(request.name),
-      subtitle: Text(request.email),
-      trailing: Wrap(
-        direction: Axis.horizontal,
-        children: [
-          IconButton(
-            onPressed: () {
-              _friendAction(request.idRequest,'Accept'); 
-            }, 
-            icon: Icon(Icons.check),
-            color: Colors.greenAccent,
-          ),
-          IconButton(
-            onPressed: () {
-              _friendAction(request.idRequest,'Decline'); 
-            },
-            icon: Icon(Icons.close),
-            color: Colors.redAccent,
-          ),
-        ],
-      ),
-    );
   }
   
+
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
-    Widget content;
-
-    if (_request.isEmpty) {
-      content = Center(
-        child: Container(),
-      );
-    } else {
-      content = ListView.builder(
-        itemCount: _request.length,
-        itemBuilder: _buildRequestListTile,
-      );
-    }
-
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
-        title: const Text('Yêu cầu kết bạn'),
+        title: const Text('Thông tin tài khoản'),
         leading: IconButton(
           onPressed: () {
             _globalKey.currentState!.openDrawer();
@@ -150,7 +91,13 @@ class _NotificationsState extends State<Notifications> {
           icon: Icon(Icons.menu,color: Colors.white),
         ),
       ),
-      body: content,
+      body:ListView (
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          buildTop(),
+          buildUnder()
+        ],
+      ),
       drawer: Drawer(
         width: 275,
         elevation: 30,
@@ -238,4 +185,59 @@ class _NotificationsState extends State<Notifications> {
       ),
     );
   }
+
+  Widget buildUnder() =>Column(
+    children: [
+      const SizedBox(height: 8),
+      Text("${_user?.name}",
+      style: TextStyle(fontSize: 28,fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(height: 16),
+      Icon(Icons.email, color: Colors.blue, size: 30),
+      Text("Email:${_user?.email}",
+          style: TextStyle(fontSize: 20,fontWeight: FontWeight.normal),
+      ),
+      const SizedBox(height: 16),
+      Icon(Icons.phone, color: Colors.blue, size: 30),
+      Text("SĐT: 0918902133",
+          style: TextStyle(fontSize: 20,fontWeight: FontWeight.normal),
+      ),   
+    ],
+  );
+  
+
+  Widget buildTop() {
+    final bottom = profileHeight / 2 ;
+    final top = convertHeight - profileHeight / 2 ;
+    return Stack(
+      clipBehavior: Clip.none,  
+      alignment: Alignment.center,
+      children:[
+      Container(
+        margin: EdgeInsets.only(bottom:bottom),
+      child : buildCoverImage(),
+      ),
+      Positioned(
+        top: top,
+        child: buildProfileImage(),
+      )
+      ],
+      );
+  }
+
+  Widget buildCoverImage() => Container(
+    color: Color.fromARGB(255, 38, 223, 248),
+    child: Image.network('https://picsum.photos/250?image=19'),
+    width: double.infinity,
+    height: convertHeight,
+    //fit:BoxFit.cover,
+  );
+
+
+  Widget buildProfileImage() => CircleAvatar(
+    radius: profileHeight / 2,
+    backgroundColor: Colors.grey.shade800,
+    backgroundImage: Image.asset('${_user?.image}').image,
+    // backgroundImage: NetworkImage("https://picsum.photos/250?image=9"),
+  );
 }

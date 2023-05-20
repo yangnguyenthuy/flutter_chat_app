@@ -1,11 +1,13 @@
 class API {
-  static const host = "http://172.20.84.26/flutter_chat";
+  static const host = "http://172.16.2.76/flutter_chat";
 
   //User
   static const userSignIn = "$host/user/dangnhap.php";
   static const userSignUp = "$host/user/dangky.php";
   static const search = "$host/user/search.php";
   static const getUserAvatar = "$host/user/getuseravatar.php";
+  static const getUserProfile = "$host/user/getuserprofile.php";
+  static const changeStatus = "$host/user/changstatus.php";
   
   //Chat
   static const getChatCard = "$host/chat/getchatcard.php";
