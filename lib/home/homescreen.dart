@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +8,13 @@ import 'package:flutter_chat_app/home/components/friendbody.dart';
 import 'package:flutter_chat_app/home/components/groupbody.dart';
 // import 'package:flutter_chat_app/home/components/homebody.dart';
 import 'package:flutter_chat_app/widget/widget_class.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../chatroom/chatroom.dart';
+import '../config/api_connection.dart';
 import '../model/chat.dart';
 import 'components/chatcard.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
+  String? _userAvatar;
 
   // int _selectedIndex = 0;
 
@@ -29,17 +35,35 @@ class _HomeScreenState extends State<HomeScreen> {
   //   FriendBody(),
   //   AccountDetail(),
   // ];
+  @override
+  void initState() {
+    _getAvatar();
+    debugPrint(_userAvatar);
+    super.initState();
+  }
+
+  Future<void> _getAvatar() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id_acc = prefs.getString('acc_id');
+    http.Response response =
+      await http.post(Uri.parse(API.getUserAvatar),body: {
+        "id": id_acc.toString(),
+      });
+
+    var results = jsonDecode(response.body);
+    String img = results['img'] as String;
+    setState(() {
+      _userAvatar = img;
+      // debugPrint(_userAvatar);
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
 
     Future<List<Chat>> chat = fetchChat();
 
-    @override
-    void initState() {
-      // chat = fetchChat();
-      super.initState();
-    }
     // return Scaffold(
     //   appBar: customAppBar(),
     //   body: _bodyOption.elementAt(_selectedIndex),
@@ -117,14 +141,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        buildContactAvatar('Alla', 'img1.jpeg'),
-                        buildContactAvatar('July', 'img2.jpeg'),
-                        buildContactAvatar('Mikle', 'img3.jpeg'),
-                        buildContactAvatar('Kler', 'img4.jpg'),
-                        buildContactAvatar('Moane', 'img5.jpeg'),
-                        buildContactAvatar('Julie', 'img6.jpeg'),
-                        buildContactAvatar('Allen', 'img7.jpeg'),
-                        buildContactAvatar('John', 'img8.jpg'),
+                        buildContactAvatar('Alla', 'images/img1.jpeg'),
+                        buildContactAvatar('July', 'images/img2.jpeg'),
+                        buildContactAvatar('Mikle', 'images/img3.jpeg'),
+                        buildContactAvatar('Kler', 'images/img4.jpg'),
+                        buildContactAvatar('Moane', 'images/img5.jpeg'),
+                        buildContactAvatar('Julie', 'images/img6.jpeg'),
+                        buildContactAvatar('Allen', 'images/img7.jpeg'),
+                        buildContactAvatar('John', 'images/img8.jpg'),
                       ],
                     ),
                   )
@@ -241,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Row(
                       children: const [
-                        UserAvatar(filename: 'img3.jpeg'),
+                        UserAvatar(filename: 'images/LuisDuong.jpg'),
                         SizedBox(
                           width: 12,
                         ),
