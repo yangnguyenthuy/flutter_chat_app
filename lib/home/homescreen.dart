@@ -26,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   String? _userAvatar;
+  String? _userName;
 
   // int _selectedIndex = 0;
 
@@ -37,12 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // ];
   @override
   void initState() {
-    _getAvatar();
-    debugPrint(_userAvatar);
     super.initState();
+    _getAvatarAndName();
   }
 
-  Future<void> _getAvatar() async {
+  Future<void> _getAvatarAndName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id_acc = prefs.getString('acc_id');
     http.Response response =
@@ -52,11 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var results = jsonDecode(response.body);
     String img = results['img'] as String;
+    String name = results['name'] as String;
+
     setState(() {
       _userAvatar = img;
-      // debugPrint(_userAvatar);
+      _userName = name;
     });
-
   }
 
   @override
@@ -264,13 +265,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 30,
                     ),
                     Row(
-                      children: const [
-                        UserAvatar(filename: 'images/LuisDuong.jpg'),
+                      children: [
+                        UserAvatar(filename: '${_userAvatar}'),
                         SizedBox(
                           width: 12,
                         ),
                         Text(
-                          'Tom Brenan',
+                          '${_userName}',
                           style: TextStyle(color: Colors.white),
                         )
                       ],
