@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' as foundation;
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +24,10 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   late String _now;
   late Timer _everySecond;
-  final inputContent = TextEditingController();
+  // final inputContent = TextEditingController();
   List<ChatMessage> _messageHistory = [];
+  final TextEditingController _controller = TextEditingController();
+  bool emojiShowing = false;
 
   @override
   void initState() {
@@ -68,7 +72,7 @@ class _BodyState extends State<Body> {
     var resBodyOfSignUp = jsonDecode(response.body);
     if(resBodyOfSignUp["Status"] == "Success")
     {
-      inputContent.clear();
+      _controller.clear();
     }
 
     setState(() {
@@ -110,76 +114,172 @@ class _BodyState extends State<Body> {
         ),
 
         Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 20.0,
-            vertical: 20.0 / 2,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(0, 4),
-                blurRadius: 32,
-                color: Color(0xFF087949).withOpacity(0.08),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: Row(
-              children: [
-                Icon(Icons.mic, color: Theme.of(context).appBarTheme.backgroundColor),
-                SizedBox(width: 20.0),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.0 * 0.75,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF00BF6D).withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.sentiment_satisfied_alt_outlined,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .color!
-                              .withOpacity(0.64),
-                        ),
-                        SizedBox(width: 20.0 / 4),
-                        Expanded(
-                          child: TextField(
-                            controller: inputContent,
-                            decoration: InputDecoration(
-                              hintText: "Type message",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            var content = inputContent.text;
-                            _sendMessage(content);
-                          }, 
-                          icon: Icon(
-                                  Icons.send,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .color!
-                                      .withOpacity(0.64),
-                                ),
-                        ),
-                      ],
-                    ),
+          height: 66.0,
+          color: Colors.blue,
+          child: Row(
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      emojiShowing = !emojiShowing;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.emoji_emotions,
+                    color: Colors.white,
                   ),
                 ),
-              ],
-            ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextField(
+                      controller: _controller,
+                      style: const TextStyle(
+                          fontSize: 20.0, color: Colors.black87),
+                      decoration: InputDecoration(
+                        hintText: 'Nhập tin nhắn',
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.only(
+                            left: 16.0,
+                            bottom: 8.0,
+                            top: 8.0,
+                            right: 16.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(50.0),
+                        ),
+                      )
+                  ),
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                    onPressed: () {
+                      // send message
+                      _sendMessage(_controller.text);
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                    )
+                ),
+              )
+            ],
+          )
+      ),
+      Offstage(
+        offstage: !emojiShowing,
+        child: SizedBox(
+            height: 250,
+            child: EmojiPicker(
+              textEditingController: _controller,
+              config: Config(
+                  columns: 7,
+                  emojiSizeMax: 32 * (foundation.defaultTargetPlatform == TargetPlatform.iOS ? 1.30 : 1.0), // Issue: https://github.com/flutter/flutter/issues/28894
+                  verticalSpacing: 0,
+                  horizontalSpacing: 0,
+                  gridPadding: EdgeInsets.zero,
+                  initCategory: Category.RECENT,
+                  bgColor: Color(0xFFF2F2F2),
+                  indicatorColor: Colors.blue,
+                  iconColor: Colors.grey,
+                  iconColorSelected: Colors.blue,
+                  backspaceColor: Colors.blue,
+                  skinToneDialogBgColor: Colors.white,
+                  skinToneIndicatorColor: Colors.grey,
+                  enableSkinTones: true,
+                  showRecentsTab: true,
+                  recentsLimit: 28,
+                  noRecents: const Text(
+                    'No Recents',
+                    style: TextStyle(fontSize: 20, color: Colors.black26),
+                    textAlign: TextAlign.center,
+                  ), // Needs to be const Widget
+                  loadingIndicator: const SizedBox.shrink(), // Needs to be const Widget
+                  tabIndicatorAnimDuration: kTabScrollDuration,    
+                  categoryIcons: const CategoryIcons(),
+                  buttonMode: ButtonMode.MATERIAL,
+              ),
+            )
           ),
-        ),
+      ),
+
+        // Container(
+        //   padding: EdgeInsets.symmetric(
+        //     horizontal: 20.0,
+        //     vertical: 20.0 / 2,
+        //   ),
+        //   decoration: BoxDecoration(
+        //     color: Theme.of(context).scaffoldBackgroundColor,
+        //     boxShadow: [
+        //       BoxShadow(
+        //         offset: Offset(0, 4),
+        //         blurRadius: 32,
+        //         color: Color(0xFF087949).withOpacity(0.08),
+        //       ),
+        //     ],
+        //   ),
+        //   child: SafeArea(
+        //     child: Row(
+        //       children: [
+        //         Icon(Icons.mic, color: Theme.of(context).appBarTheme.backgroundColor),
+        //         SizedBox(width: 20.0),
+        //         Expanded(
+        //           child: Container(
+        //             padding: EdgeInsets.symmetric(
+        //               horizontal: 20.0 * 0.75,
+        //             ),
+        //             decoration: BoxDecoration(
+        //               color: Color(0xFF00BF6D).withOpacity(0.05),
+        //               borderRadius: BorderRadius.circular(40),
+        //             ),
+        //             child: Row(
+        //               children: [
+        //                 Icon(
+        //                   Icons.sentiment_satisfied_alt_outlined,
+        //                   color: Theme.of(context)
+        //                       .textTheme
+        //                       .bodyLarge!
+        //                       .color!
+        //                       .withOpacity(0.64),
+        //                 ),
+        //                 SizedBox(width: 20.0 / 4),
+        //                 Expanded(
+        //                   child: TextField(
+        //                     controller: inputContent,
+        //                     decoration: InputDecoration(
+        //                       hintText: "Type message",
+        //                       border: InputBorder.none,
+        //                     ),
+        //                   ),
+        //                 ),
+        //                 IconButton(
+        //                   onPressed: () {
+        //                     var content = inputContent.text;
+        //                     _sendMessage(content);
+        //                   }, 
+        //                   icon: Icon(
+        //                           Icons.send,
+        //                           color: Theme.of(context)
+        //                               .textTheme
+        //                               .bodyLarge!
+        //                               .color!
+        //                               .withOpacity(0.64),
+        //                         ),
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
+
         // FutureBuilder<List<ChatMessage>>(
         //   future: fetchMessage(),
         //   builder: (context, snapshot) {
