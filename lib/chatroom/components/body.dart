@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -10,8 +12,11 @@ import 'package:flutter_chat_app/chatroom/components/chatinputfield.dart';
 import 'package:flutter_chat_app/chatroom/components/message.dart';
 import 'package:flutter_chat_app/model/message.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_app/config/api_connection.dart';
+import 'package:image_picker_for_web/image_picker_for_web.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key, required this.id_room});
@@ -24,10 +29,15 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   late String _now;
   late Timer _everySecond;
-  // final inputContent = TextEditingController();
   List<ChatMessage> _messageHistory = [];
   final TextEditingController _controller = TextEditingController();
   bool emojiShowing = false;
+
+  File? imagepath;
+  String? imagename;
+  // String? imagedata;
+
+  ImagePicker imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -80,6 +90,41 @@ class _BodyState extends State<Body> {
     });
   }
 
+  getImage() async {
+    // FilePickerResult? result = await FilePicker.platform.pickFiles();
+    XFile? getimage = await imagePicker.pickImage(source: ImageSource.gallery);
+    imagepath = File(getimage!.path);
+    imagename = getimage.path.split('/').last;
+
+    print(imagepath);
+    print(imagename);
+
+    var imagedata = base64Encode(imagepath!.readAsBytesSync());
+    print(imagedata);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString('acc_id');
+    var room = widget.id_room;
+
+    var res = await http.post(Uri.parse(API.uploadImage), body: {
+      "data": imagedata,
+      "name": imagename,
+      "acc_id": id,
+      "room_id": room,
+    });
+
+    var response = jsonDecode(res.body);
+
+    if(response["success"] == "true")
+    {
+      print("done");
+    }
+    else
+    {
+      print("No Okay");
+    }
+  }
+
   // Future<List<ChatMessage>> fetchMessage() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   var uid = prefs.getString('acc_id');
@@ -105,13 +150,15 @@ class _BodyState extends State<Body> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: ListView.builder(
+            child: ScrollablePositionedList.builder(
               itemCount: _messageHistory.length,
               itemBuilder: (context, index) =>
                   Message(message: _messageHistory[index]),
+                  
             ),
           ),
         ),
+        SizedBox(height: 10,),
 
         Container(
           height: 66.0,
@@ -128,6 +175,18 @@ class _BodyState extends State<Body> {
                   },
                   icon: const Icon(
                     Icons.emoji_emotions,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: IconButton(
+                  onPressed: () {
+                      getImage();
+                  },
+                  icon: const Icon(
+                    Icons.camera_alt,
                     color: Colors.white,
                   ),
                 ),

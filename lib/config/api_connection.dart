@@ -16,6 +16,7 @@ class API {
   
   //Send
   static const sendMessage = "$host/chat/sendmessage.php";
+  static const uploadImage = "$host/chat/uploadimage.php";
 
   //Friend
   static const getFriendList = "$host/friend/getfriendlist.php";

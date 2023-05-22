@@ -28,6 +28,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  file_picker: ^5.3.0 
+  image_picker_for_web: ^2.1.12
+  image_picker: ^0.8.7+5
+  scrollable_positioned_list: ^0.3.8
   emoji_picker_flutter: ^1.5.4
   shared_preferences: ^2.1.1
   flutter_login: ^4.1.1
