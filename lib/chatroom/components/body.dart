@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html' as html;
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' as foundation;
@@ -13,6 +15,7 @@ import 'package:flutter_chat_app/chatroom/components/message.dart';
 import 'package:flutter_chat_app/model/message.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_web/image_picker_web.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_app/config/api_connection.dart';
@@ -33,14 +36,18 @@ class _BodyState extends State<Body> {
   final TextEditingController _controller = TextEditingController();
   bool emojiShowing = false;
 
+  List<int>? _selectedFile;
+  Uint8List? _bytesData;
+
   File? imagepath;
   String? imagename;
-  // String? imagedata;
+  String? imagedata;
 
   ImagePicker imagePicker = ImagePicker();
 
   @override
   void initState() {
+    _setAllMessViewed();
     _loadMessage();
     super.initState();
 
@@ -48,10 +55,23 @@ class _BodyState extends State<Body> {
 
     _everySecond = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       setState(() {
+        _setAllMessViewed();
         _loadMessage();
         _now = DateTime.now().second.toString();
       });
     });
+  }
+
+  _setAllMessViewed() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString('acc_id');
+    var room =  widget.id_room.toString();
+    final response = await http.post(
+      Uri.parse(API.allMessViewed), 
+      body: {
+        "id": id.toString(),
+        "room": room.toString(),
+      });
   }
 
   Future<void> _loadMessage() async {
@@ -86,62 +106,94 @@ class _BodyState extends State<Body> {
     }
 
     setState(() {
+      _setAllMessViewed();
       _loadMessage();
     });
   }
 
+  // getImage() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   var id = prefs.getString('acc_id');
+  //   var room = widget.id_room;
+
+  //   html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+  //   uploadInput.multiple = true;
+  //   uploadInput.draggable = true;
+  //   uploadInput.click();
+
+  //   uploadInput.onChange.listen((event) async {
+  //     final files = uploadInput.files;
+  //     final file = files![0];
+  //     final reader = html.FileReader();
+
+  //     reader.onLoadEnd.listen((event) {
+  //       setState(() {
+  //         _bytesData = Base64Decoder().convert(reader.result.toString().split(",").last);
+  //         _selectedFile = _bytesData;
+  //         print(_bytesData);
+  //         // uploadImage();
+  //       });
+  //     },);
+
+  //     reader.readAsDataUrl(file);
+  //   });
+  //   // Image? fromPicker = await ImagePickerWeb.getImageAsWidget();
+  // }
+
+  // uploadImage() async {
+  //   var request = http.MultipartRequest("POST", Uri.parse(API.uploadImage));
+  //   request.files.add(await http.MultipartFile.fromBytes('file', _selectedFile!, filename: "file_name"));
+
+  //   request.send().then((response) {
+  //     if (response.statusCode == 200) {
+  //       print(jsonEncode(response));
+  //       print("File uploaded successfully");
+  //     } else {
+  //       print('file upload failed');
+  //     }
+  //   });
+  // }
+
   getImage() async {
-    // FilePickerResult? result = await FilePicker.platform.pickFiles();
     XFile? getimage = await imagePicker.pickImage(source: ImageSource.gallery);
     imagepath = File(getimage!.path);
-    imagename = getimage.path.split('/').last;
+    //imagename = getimage.path.split('/').last;
 
-    print(imagepath);
+    imagename = getimage.name;
+
     print(imagename);
+    // print(imagename);
 
-    var imagedata = base64Encode(imagepath!.readAsBytesSync());
-    print(imagedata);
+    // imagedata = base64Encode(imagepath!.readAsBytesSync());
+    // print(imagedata);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = prefs.getString('acc_id');
     var room = widget.id_room;
 
     var res = await http.post(Uri.parse(API.uploadImage), body: {
-      "data": imagedata,
-      "name": imagename,
-      "acc_id": id,
-      "room_id": room,
+      "content": imagename,
+      "acc_id": id.toString(),
+      "room_id": room.toString(),
     });
 
-    var response = jsonDecode(res.body);
+    print(jsonDecode(res.body));
 
-    if(response["success"] == "true")
-    {
-      print("done");
-    }
-    else
-    {
-      print("No Okay");
-    }
+    setState(() {
+      _loadMessage();
+    });
+
+    // var response = jsonDecode(res.body);
+
+    // if(response["success"] == "true")
+    // {
+    //   print("done");
+    // }
+    // else
+    // {
+    //   print("No Okay");
+    // }
   }
-
-  // Future<List<ChatMessage>> fetchMessage() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   var uid = prefs.getString('acc_id');
-  //   var id =  widget.id_room.toString();
-  //   final response = await http.post(Uri.parse(API.getChatMessage),body: {"id": id});
-  //   return parseMessage(response.body, uid!);
-  // }
-
-  // List<ChatMessage> parseMessage(String responseBody, String uid) {
-  //   List<ChatMessage> messageLog = <ChatMessage>[];
-  //   var parsed = jsonDecode(responseBody) as List;
-  //   parsed.forEach((element) { 
-  //     messageLog.add(ChatMessage.fromJson(element,uid));
-  //   });
-
-  //   return messageLog;
-  // }
 
   @override
   Widget build(BuildContext context) {

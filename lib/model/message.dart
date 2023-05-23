@@ -35,10 +35,18 @@ class ChatMessage {
     {
       type = ChatMessageType.text;
     }
+    else if(map['mes_type'] == "Img")
+    {
+      type = ChatMessageType.image;
+    }
 
     if(map['mes_status'] == "not view")
     {
       status = MessageStatus.not_view;
+    }
+    else if(map['mes_status'] == "view")
+    {
+      status = MessageStatus.viewed;
     }
 
     if(int.parse(map['acc_id']) == int.parse(uid))

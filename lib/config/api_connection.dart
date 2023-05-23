@@ -13,6 +13,7 @@ class API {
   static const getChatCard = "$host/chat/getchatcard.php";
   static const getChatPerson = "$host/chat/getchatperson.php";
   static const getChatMessage = "$host/chat/getchatmessage.php";
+  static const allMessViewed = "$host/chat/allMessViewed.php";
   
   //Send
   static const sendMessage = "$host/chat/sendmessage.php";

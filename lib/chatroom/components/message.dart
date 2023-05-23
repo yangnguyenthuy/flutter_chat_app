@@ -22,8 +22,8 @@ class Message extends StatelessWidget {
           return TextMessage(message: message);
         case ChatMessageType.audio:
           return AudioMessage(message: message);
-        case ChatMessageType.video:
-          return VideoMessage();
+        case ChatMessageType.image:
+          return VideoMessage(message: message);
         default:
           return SizedBox();
       }
@@ -34,13 +34,13 @@ class Message extends StatelessWidget {
         mainAxisAlignment:
             message.isSender ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!message.isSender) ...[
-            CircleAvatar(
-              radius: 12,
-              backgroundImage: AssetImage("assets/images/user_2.png"),
-            ),
-            SizedBox(width: 20.0 / 2),
-          ],
+          // if (!message.isSender) ...[
+          //   CircleAvatar(
+          //     radius: 12,
+          //     backgroundImage: AssetImage("assets/images/user_2.png"),
+          //   ),
+          //   SizedBox(width: 20.0 / 2),
+          // ],
           messageContaint(message),
           if (message.isSender) MessageStatusDot(status: message.messageStatus),
         ],

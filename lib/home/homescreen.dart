@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/src/widgets/framework.dart';
@@ -27,11 +28,24 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _globalKey = GlobalKey();
   String? _userAvatar;
   String? _userName;
+  late String _now;
+  late Timer _everySecond;
+
+  Future<List<Chat>> chat = fetchChat();
 
   @override
   void initState() {
     super.initState();
     _getAvatarAndName();
+
+    _now = DateTime.now().second.toString();
+
+    _everySecond = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      setState(() {
+        chat = fetchChat();
+        _now = DateTime.now().second.toString();
+      });
+    });
   }
 
   Future<void> _getAvatarAndName() async {
@@ -54,8 +68,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    Future<List<Chat>> chat = fetchChat();
 
     // return Scaffold(
     //   appBar: customAppBar(),
@@ -172,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               snapshot.data?[index].image as String, 
                               snapshot.data?[index].id_acc as int,
                               snapshot.data?[index].id_room as int,
-                              0,
+                              snapshot.data?[index].msgCount as int,
                               context,
                             );
                         },
