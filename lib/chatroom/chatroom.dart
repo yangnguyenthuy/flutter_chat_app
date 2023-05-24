@@ -55,6 +55,11 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(),
@@ -69,6 +74,7 @@ class _ChatRoomState extends State<ChatRoom> {
               children: [
                 BackButton(
                   onPressed: () {
+                    dispose();
                     Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
                   },
                 ),

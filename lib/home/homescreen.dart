@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/add_members.dart';
 import 'package:flutter_chat_app/home/components/friendbody.dart';
 import 'package:flutter_chat_app/home/components/groupbody.dart';
+import 'package:flutter_chat_app/model/friend.dart';
 // import 'package:flutter_chat_app/home/components/homebody.dart';
 import 'package:flutter_chat_app/widget/widget_class.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../chatroom/chatroom.dart';
 import '../config/api_connection.dart';
 import '../model/chat.dart';
+import '../model/user.dart';
 import 'components/chatcard.dart';
 import 'package:http/http.dart' as http;
 
@@ -33,18 +35,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<List<Chat>> chat = fetchChat();
 
+  List<Friend> _friends = [];
+
   @override
   void initState() {
     super.initState();
     _getAvatarAndName();
+    _getOnlineFriend();
 
     _now = DateTime.now().second.toString();
 
     _everySecond = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       setState(() {
         chat = fetchChat();
+        _getOnlineFriend();
         _now = DateTime.now().second.toString();
       });
+    });
+  }
+
+  Future<void> _getOnlineFriend() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString('acc_id');
+    http.Response response =
+        await http.post(Uri.parse(API.getOnlineFriend),body: {
+          "id": id.toString(),
+        });
+
+    setState(() {
+      _friends = Friend.allFromResponse(response.body);
     });
   }
 
@@ -137,20 +156,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(
                     height: 90,
-                    child: ListView(
+                    child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      children: [
-                        buildContactAvatar('Alla', 'images/img1.jpeg'),
-                        buildContactAvatar('July', 'images/img2.jpeg'),
-                        buildContactAvatar('Mikle', 'images/img3.jpeg'),
-                        buildContactAvatar('Kler', 'images/img4.jpg'),
-                        buildContactAvatar('Moane', 'images/img5.jpeg'),
-                        buildContactAvatar('Julie', 'images/img6.jpeg'),
-                        buildContactAvatar('Allen', 'images/img7.jpeg'),
-                        buildContactAvatar('John', 'images/img8.jpg'),
-                        buildContactAvatar('John', 'images/img8.jpg'),
-                      ],
+                      itemCount: _friends.length,
+                      itemBuilder: (context,index) {
+                        return buildContactAvatar(_friends[index].avatar);
+                      }
                     ),
+                    // child: ListView(
+                    //   scrollDirection: Axis.horizontal,
+                    //   children: [
+                    //     buildContactAvatar('Alla', 'images/img1.jpeg'),
+                    //     buildContactAvatar('July', 'images/img2.jpeg'),
+                    //     buildContactAvatar('Mikle', 'images/img3.jpeg'),
+                    //     buildContactAvatar('Kler', 'images/img4.jpg'),
+                    //     buildContactAvatar('Moane', 'images/img5.jpeg'),
+                    //     buildContactAvatar('Julie', 'images/img6.jpeg'),
+                    //     buildContactAvatar('Allen', 'images/img7.jpeg'),
+                    //     buildContactAvatar('John', 'images/img8.jpg'),
+                    //     buildContactAvatar('John', 'images/img8.jpg'),
+                    //   ],
+                    // ),
                   )
                 ],
               ),
@@ -381,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Padding buildContactAvatar(String name, String filename) {
+  Padding buildContactAvatar(String filename) {
     return Padding(
       padding: const EdgeInsets.only(right: 20.0),
       child: Column(
@@ -392,10 +418,6 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 5,
           ),
-          Text(
-            name,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          )
         ],
       ),
     );

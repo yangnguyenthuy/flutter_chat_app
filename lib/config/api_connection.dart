@@ -21,6 +21,7 @@ class API {
 
   //Friend
   static const getFriendList = "$host/friend/getfriendlist.php";
+  static const getOnlineFriend = "$host/friend/getonlinefriend.php";
   static const sendFriendRequest = "$host/friend/sendfriendrequest.php";
   static const getFriendRequest = "$host/friend/getfriendrequest.php";
   static const friendAction = "$host/friend/friendaction.php";
